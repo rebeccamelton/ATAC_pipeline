@@ -6,7 +6,7 @@ SCRIPTS_SOURCE_DIR="${SCRIPT_DIR}/scripts"
 
 # Docker image names
 CELLRANGER_IMAGE="cellranger:latest"
-CLUSTERING_IMAGE="snatac-clustering:latest"
+#CLUSTERING_IMAGE="snatac-clustering:latest"
 
 # Default values
 CORES=24
@@ -177,24 +177,24 @@ run_complete_pipeline() {
         log_message "Cellranger analysis completed successfully"
     fi
 
-    # 2. Run Clustering analysis
-    if [[ "$START_PHASE" = "cellranger" || "$START_PHASE" = "clustering" ]]; then
-        log_message "Starting Clustering analysis..."
-        docker run --rm \
-            -v "${CELLRANGER_OUT}:/cellranger" \
-            -v "${CLUSTERING_OUT}:/output" \
-            ${CLUSTERING_IMAGE} \
-            -s ${SAMPLE_NAME} \
-            -p /pipeline \
-            -c /cellranger \
-            -o /output
+    # # 2. Run Clustering analysis
+    # if [[ "$START_PHASE" = "cellranger" || "$START_PHASE" = "clustering" ]]; then
+    #     log_message "Starting Clustering analysis..."
+    #     docker run --rm \
+    #         -v "${CELLRANGER_OUT}:/cellranger" \
+    #         -v "${CLUSTERING_OUT}:/output" \
+    #         ${CLUSTERING_IMAGE} \
+    #         -s ${SAMPLE_NAME} \
+    #         -p /pipeline \
+    #         -c /cellranger \
+    #         -o /output
 
-        if [ $? -ne 0 ]; then
-            log_message "Error: Clustering analysis failed"
-            exit 1
-        fi
-        log_message "Clustering analysis completed successfully"
-    fi
+    #     if [ $? -ne 0 ]; then
+    #         log_message "Error: Clustering analysis failed"
+    #         exit 1
+    #     fi
+    #     log_message "Clustering analysis completed successfully"
+    # fi
 
     log_message "Complete pipeline finished successfully"
 }
