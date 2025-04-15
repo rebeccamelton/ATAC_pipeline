@@ -6,7 +6,6 @@ usage() {
     echo
     echo "Commands:"
     echo " cellranger Run cellranger ATAC analysis"
-    echo " pipeline Run custom ATAC windows analysis"
     echo " clustering Run clustering analysis"
     echo " python Run Python command"
     echo " R Run R command"
@@ -18,18 +17,6 @@ usage() {
     echo " -f DIR FASTQ directory"
     echo " -c CORES Number of cores (default: 24)"
     echo " -m MEM Memory in GB (default: 200)"
-    echo
-    echo "Options for pipeline:"
-    echo " -b SAMPLE Sample name"
-    echo " -o DIR Output directory"
-    echo " -t THREADS Number of threads (default: 24)"
-    echo " -m MEM Memory in GB (default: 200)"
-    echo " -r READS Minimum reads threshold (default: 1000)"
-    echo
-    echo "Options for clustering:"
-    echo " -i INPUT Input data file"
-    echo " -o OUTPUT Output directory"
-    echo " -k CLUSTERS Number of clusters"
 }
 
 # Function to show version information
@@ -55,11 +42,8 @@ case "$CMD" in
     "cellranger")
         exec /scripts/runCellranger.sh "$@"
         ;;
-    "pipeline")
-        exec /scripts/runTestPy_Pipeline.sh "$@"
-        ;;
     "clustering")
-        exec /scripts/runClustering.R "$@"
+        exec /scripts/ClusteringScript.R "$@"
         ;;
     "python")
         exec python3 "$@"
