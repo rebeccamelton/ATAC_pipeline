@@ -1,0 +1,33 @@
+references/hg38.fa
+# Reference files
+references/*.fa
+references/*.fasta
+references/*.2bit
+references/*.gz
+references/*.tar.gz
+
+# Large data files
+*.bam
+*.sam
+*.fastq
+*.fq
+*.fastq.gz
+*.fq.gz
+
+# Analysis outputs
+03_cellranger/*/
+04_pipeline/*/
+05_clustering/*/
+
+# Logs
+logs/
+*.log
+
+# Singularity dirs/files
+*.sif
+
+# Ignore test outputs
+010825_test/*
+021225_test/*
+040725/*
+041025/*
