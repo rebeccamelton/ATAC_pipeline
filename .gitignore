@@ -35,3 +35,4 @@ logs/
 # Ignore Amulet
 scripts/packages/AMULET_v1.1/*scripts/packages/AMULET_v1.1/
 scripts/packages/AMULET_v1.1/
+scripts/packages/AMULET_v1.1/restrictionlist_repeats_segdups_rmsk_hg38.bed
