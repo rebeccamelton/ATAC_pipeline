@@ -31,3 +31,6 @@ logs/
 021225_test/*
 040725/*
 041025/*
+
+# Ignore Amulet
+scripts/packages/AMULET_v1.1/*
