@@ -3,8 +3,16 @@ FROM rocker/r-ver:4.4
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install system dependencies
+# Install system dependencies for Python 3.9
 RUN apt-get update && apt-get install -y \
+    software-properties-common \
+    && add-apt-repository ppa:deadsnakes/ppa \
+    && apt-get update \
+    && apt-get install -y \
+    python3.9 \
+    python3.9-dev \
+    python3.9-venv \
+    python3-pip \
     libxml2-dev \
     libcurl4-openssl-dev \
     libssl-dev \
@@ -15,9 +23,6 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libtiff5-dev \
     libjpeg-dev \
-    python3 \
-    python3-pip \
-    python3-dev \
     libhdf5-dev \
     libgit2-dev \
     zlib1g-dev \
@@ -26,71 +31,77 @@ RUN apt-get update && apt-get install -y \
     libopenblas-dev \
     && rm -rf /var/lib/apt/lists/*
 
+# Update alternatives to use Python 3.9
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 1 \
+    && update-alternatives --set python3 /usr/bin/python3.9
+
 # Set Python environment variables
-ENV RETICULATE_PYTHON="/usr/bin/python3"
+ENV RETICULATE_PYTHON="/usr/bin/python3.9"
 
 # Install R packages
 RUN R -e 'options(repos = c(CRAN = "https://cloud.r-project.org")); \
     install.packages(c( \
-        "BiocManager", \
-        "remotes", \
-        "devtools", \
-        "ggplot2", \
-        "Matrix", \
-        "reticulate", \
-        "Rcpp", \
-        "RcppArmadillo", \
-        "leiden", \
-        "uwot", \
-        "Seurat", \
-        "Signac", \
-        "Matrix" \
+    "BiocManager", \
+    "remotes", \
+    "devtools", \
+    "ggplot2", \
+    "Matrix", \
+    "reticulate", \
+    "Rcpp", \
+    "RcppArmadillo", \
+    "leiden", \
+    "uwot", \
+    "Seurat", \
+    "Signac", \
+    "Matrix", \
+    "hdf5r" \
     ))'
 
 # Install Bioconductor packages
 RUN R -e 'BiocManager::install(c( \
-        "EnsDb.Hsapiens.v86", \
-        "GenomeInfoDb", \
-        "biovizBase", \
-        "GenomicRanges", \
-        "IRanges", \
-        "Rsamtools", \
-        "S4Vectors", \
-        "multtest", \
-        "SeuratObject" \
+    "EnsDb.Hsapiens.v86", \
+    "GenomeInfoDb", \
+    "biovizBase", \
+    "GenomicRanges", \
+    "IRanges", \
+    "Rsamtools", \
+    "S4Vectors", \
+    "multtest", \
+    "SeuratObject", \
+    "logr", \
+    "BSgenome.Hsapiens.UCSC.hg38" \
     ), ask=FALSE)'
+
 # Install R packages
 RUN R -e 'options(repos = c(CRAN = "https://cloud.r-project.org")); \
     install.packages("Signac")'
-# Install python3-full
-RUN apt-get update && apt-get install -y python3-full
 
 # Create and activate virtual environment
 ENV VIRTUAL_ENV=/opt/venv
-RUN python3 -m venv $VIRTUAL_ENV
+RUN python3.9 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # Now install packages in the virtual environment
-RUN pip install leidenalg
-RUN pip install numpy
-RUN pip install pandas
-RUN pip install scipy 
-RUN pip install statsmodels
+# Upgrade pip first to ensure smooth installation
+RUN pip install --upgrade pip
 
-
+# Install specific versions of packages
+RUN pip install leidenalg \ 
+    && pip install pandas==2.0.0 \
+    && pip install scipy==1.10.1 \
+    && pip install statsmodels==0.13.5 \
+    && pip install numpy==1.20.3 
 # Create directories
 RUN mkdir -p /input /output /scripts && \
     chmod 777 /input /output /scripts
 
 COPY scripts/* /scripts/
-
 RUN chmod +x /scripts/*.sh && \
-    chmod +x /scripts/*.py && \
-    sed -i 's/\r$//' /scripts/*.sh 
+    chmod +x /scripts/*.R && \
+    sed -i 's/\r$//' /scripts/*.sh
 
 # Set up volume mount points
 VOLUME ["/input", "/output"]
-#WORKDIR /output
 
 # Default command
 ENTRYPOINT ["/scripts/pipeline_entrypoint.sh"]

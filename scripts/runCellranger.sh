@@ -7,10 +7,10 @@ mem=200
 ref="/references/refdata-cellranger-arc-GRCh38-2020-A-2.0.0/"
 
 # Parse command line arguments
-while getopts "b:f:r:c:m:o:" flag
+while getopts "s:f:r:c:m:o:" flag
 do
     case "${flag}" in
-        b) sample=${OPTARG};;      # Sample name
+        s) sample=${OPTARG};;      # Sample name
         f) fastqDir=${OPTARG};;    # FASTQ directory
         r) ref=${OPTARG};;         # Reference directory
         c) cores=${OPTARG};;       # Number of cores
@@ -21,8 +21,8 @@ done
 
 # Check if required parameters are provided
 if [ -z "$sample" ] || [ -z "$fastqDir" ]; then
-    echo "Error: Sample name (-b) and FASTQ directory (-f) are required"
-    echo "Usage: $0 -b <sample_name> -f <fastq_dir> [-r <reference_dir>] [-c <cores>] [-m <memory_GB>]"
+    echo "Error: Sample name (-s) and FASTQ directory (-f) are required"
+    echo "Usage: $0 -s <sample_name> -f <fastq_dir> [-r <reference_dir>] [-c <cores>] [-m <memory_GB>]"
     exit 1
 fi
 

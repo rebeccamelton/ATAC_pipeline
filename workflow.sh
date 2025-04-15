@@ -26,7 +26,7 @@ show_usage() {
     echo "  -w DIR    Working directory where analysis will be performed"
     echo
     echo "Options for run:"
-    echo "  -b NAME   Sample name"
+    echo "  -s NAME   Sample name"
     echo "  -c CORES  Number of cores (default: 24)"
     echo "  -t MEM    Total memory in GB for cellranger (default: 200)"
     echo "  -p PHASE  Start from specific phase (cellranger|clustering)"
@@ -35,8 +35,8 @@ show_usage() {
     echo
     echo "Example:"
     echo "  $0 setup -w /path/to/010825_test"
-    echo "  $0 run -w /path/to/010825_test -b sample_name -c 24 -t 200"
-    echo "  $0 run -w /path/to/010825_test -b sample_name -p clustering  # Start from clustering phase"
+    echo "  $0 run -w /path/to/010825_test -s sample_name -c 24 -t 200"
+    echo "  $0 run -w /path/to/010825_test -s sample_name -p clustering  # Start from clustering phase"
 }
 
 # Function to log messages
@@ -48,10 +48,10 @@ log_message() {
 # Function to process common arguments
 process_args() {
     local OPTIND
-    while getopts "w:b:c:t:p:x:h:" flag; do
+    while getopts "w:s:c:t:p:x:h:" flag; do
         case ${flag} in
             w) WORKING_DIR=${OPTARG};;
-            b) SAMPLE_NAME=${OPTARG};;
+            s) SAMPLE_NAME=${OPTARG};;
             c) CORES=${OPTARG};;
             t) TOTAL_MEMORY=${OPTARG};;
             p) START_PHASE=${OPTARG};;
@@ -85,6 +85,7 @@ setup_directories() {
         "${WORKING_DIR}/03_cellranger"
         "${WORKING_DIR}/04_clustering"
         "${WORKING_DIR}/logs"
+        "${WORKING_DIR}/tmp"
     )
 
     for dir in "${dirs[@]}"; do
@@ -145,7 +146,8 @@ run_complete_pipeline() {
     local CELLRANGER_OUT="${WORKING_DIR}/03_cellranger"
     local CLUSTERING_OUT="${WORKING_DIR}/04_clustering"
     local LOG_DIR="${WORKING_DIR}/logs"
-    
+    local TMP_DIR="${WORKING_DIR}/tmp"
+
     # Initialize logging
     local timestamp=$(date '+%Y%m%d_%H%M%S')
     local LOG_FILE="${LOG_DIR}/pipeline_${timestamp}.log"
@@ -165,10 +167,11 @@ run_complete_pipeline() {
             -v "${FASTQ_DIR}:/fastq:ro" \
             -v "${CELLRANGER_OUT}:/output" \
             ${CELLRANGER_IMAGE} cellranger \
-            -b ${SAMPLE_NAME} \
+            -s ${SAMPLE_NAME} \
             -f /fastq \
             -c ${CORES} \
-            -m ${TOTAL_MEMORY}
+            -m ${TOTAL_MEMORY} \
+            -o /output
 
         if [ $? -ne 0 ]; then
             log_message "Error: Cellranger analysis failed"
@@ -177,24 +180,23 @@ run_complete_pipeline() {
         log_message "Cellranger analysis completed successfully"
     fi
 
-    # 2. Run Clustering analysis
-    if [[ "$START_PHASE" = "cellranger" || "$START_PHASE" = "clustering" ]]; then
-        log_message "Starting Clustering analysis..."
-        docker run --rm \
-            -v "${CELLRANGER_OUT}:/cellranger" \
-            -v "${CLUSTERING_OUT}:/output" \
-            ${CLUSTERING_IMAGE} \
-            -s ${SAMPLE_NAME} \
-            -p /pipeline \
-            -c /cellranger \
-            -o /output
+     # 2. Run Clustering analysis
+     if [[ "$START_PHASE" = "cellranger" || "$START_PHASE" = "clustering" ]]; then
+         log_message "Starting Clustering analysis..."
+         docker run --rm \
+             -v "${CELLRANGER_OUT}:/03_cellranger" \
+             -v "${CLUSTERING_OUT}:/04_clustering" \
+             ${CLUSTERING_IMAGE} clustering \
+             -s ${SAMPLE_NAME} \
+             -i /03_cellranger/ \
+             -o /04_clustering/
 
-        if [ $? -ne 0 ]; then
-            log_message "Error: Clustering analysis failed"
-            exit 1
-        fi
-        log_message "Clustering analysis completed successfully"
-    fi
+         if [ $? -ne 0 ]; then
+             log_message "Error: Clustering analysis failed"
+             exit 1
+         fi
+         log_message "Clustering analysis completed successfully"
+     fi
 
     log_message "Complete pipeline finished successfully"
 }

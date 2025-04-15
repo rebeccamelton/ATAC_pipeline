@@ -34,7 +34,6 @@ COPY references/* /references/
 
 # Make scripts executable and fix line endings
 RUN chmod +x /scripts/*.sh && \
-    chmod +x /scripts/*.py && \
     sed -i 's/\r$//' /scripts/*.sh && \
     ln -sf /scripts/pipeline_entrypoint.sh /pipeline_entrypoint.sh
 
