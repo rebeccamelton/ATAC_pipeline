@@ -36,7 +36,9 @@ parse_args <- function() {
         output_dir = '/04_clustering/',
         pdf_dir = '/04_clustering/',
         resolution = 0.5,
-        min_fragments = 1000
+        min_fragments = 1000,
+        run_amulet = FALSE  # Add AMULET flag
+
     )
     
     # Parse arguments
@@ -57,15 +59,19 @@ parse_args <- function() {
         } else if (args[i] == "-f" || args[i] == "--min-fragments") {
             opts$min_fragments <- as.numeric(args[i+1])
             i <- i + 2
+        } else if (args[i] == "--amulet") {
+            opts$run_amulet <- TRUE
+            i <- i + 1
         } else {
             cat("Unknown argument:", args[i], "\n")
             cat("Usage: Rscript cluster.r -s <sample_name> [options]\n")
             cat("Options:\n")
             cat("  -s, --sample        Sample name (required)\n")
             cat("  -c, --cellranger    Cellranger directory (default: /03_cellranger/)\n")
-            cat("  -o, --output        Output directory (default: /05_clustering/)\n")
+            cat("  -o, --output        Output directory (default: /04_clustering/)\n")
             cat("  -r, --resolution    Clustering resolution (default: 0.5)\n")
             cat("  -f, --min-fragments Minimum fragments per cell (default: 1000)\n")
+            cat("  --amulet            Run AMULET doublet detection (default: disabled)\n")
             quit(status = 1)
         }
     }
@@ -164,16 +170,18 @@ run_clustering <- function(opts) {
         '_Initial_QC_Plots.pdf', 
         reduction = 'windows'
     )
-
-    # Prepare AMULET barcode table
-    amulet_table <- dplyr::left_join(
+    if (opts$run_amulet) {
+        # Prepare AMULET barcode table
+        log_print("Running AMULET doublet detection...")
+        # Prepare AMULET barcode table
+        amulet_table <- dplyr::left_join(
         amulet_barcodes, 
         data.frame(
             barcode=colnames(adata), 
             cell_id=colnames(adata), 
             is__cell_barcode=TRUE
         )
-    )
+            )
     amulet_table$is__cell_barcode[is.na(amulet_table$is__cell_barcode)] <- FALSE
     amulet_table$is__cell_barcode <- as.numeric(amulet_table$is__cell_barcode)
     amulet_table$cell_id[is.na(amulet_table$cell_id)] <- 'None'
@@ -259,7 +267,11 @@ run_clustering <- function(opts) {
     saveRDS(adata, paste0(opts$output_dir, opts$sample,"_postAmulet",".RDS"))
     
 
-    log_print("Clustering analysis completed successfully.")
+    log_print("Clustering analysis including AMULET completed successfully.")
+    } else {
+        log_print("Clustering analysis completed successfully.")
+
+    }
 }
 
 # Main execution

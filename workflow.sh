@@ -189,7 +189,8 @@ run_complete_pipeline() {
              ${CLUSTERING_IMAGE} clustering \
              -s ${SAMPLE_NAME} \
              -i /03_cellranger/ \
-             -o /04_clustering/
+             -o /04_clustering/  \
+             --amulet
 
          if [ $? -ne 0 ]; then
              log_message "Error: Clustering analysis failed"
