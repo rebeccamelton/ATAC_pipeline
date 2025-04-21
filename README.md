@@ -4,7 +4,13 @@
 This pipeline provides an automated workflow for processing single-cell ATAC-seq data through three main phases:
 1. Cellranger ATAC processing
 2. Window-based clustering using Seurat
-   
+---
+# TSCC
+Directions for running this pipeline on TSCC's HPC system using slurm and singularity
+
+
+---
+# Gaulton Lab servers
 ## Prerequisites
 - Clone this repo 
 - Docker installed and running
