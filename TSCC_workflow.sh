@@ -4,9 +4,9 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
 SCRIPTS_SOURCE_DIR="${SCRIPT_DIR}/scripts"
 
-# Docker image names
-CELLRANGER_IMAGE="cellranger:latest"
-CLUSTERING_IMAGE="snatac-clustering:latest"
+# Singularity image paths (you'll need to adjust these to your actual .sif file locations)
+CELLRANGER_IMAGE="cellranger.sif"
+CLUSTERING_IMAGE="snatac-clustering.sif"
 
 # Default values
 CORES=24
@@ -117,7 +117,7 @@ setup_directories() {
     echo
     echo "Next steps:"
     echo "1. Place your FASTQ files in: ${WORKING_DIR}/02_fastq"
-    echo "2. Run analysis using: $0 run -w ${WORKING_DIR} -b <sample_name>"
+    echo "2. Run analysis using: $0 run -w ${WORKING_DIR} -s <sample_name>"
     echo
     echo "For more information, refer to the README file."
     echo "==================================================================="
@@ -127,7 +127,7 @@ setup_directories() {
 run_complete_pipeline() {
     # Validate required parameters
     if [ -z "$SAMPLE_NAME" ]; then
-        echo "Error: Sample name (-b) must be specified"
+        echo "Error: Sample name (-s) must be specified"
         show_usage
         exit 1
     fi
@@ -163,9 +163,11 @@ run_complete_pipeline() {
     # 1. Run Cellranger analysis
     if [ "$START_PHASE" = "cellranger" ]; then
         log_message "Starting Cellranger analysis..."
-        docker run --rm \
-            -v "${FASTQ_DIR}:/fastq:ro" \
-            -v "${CELLRANGER_OUT}:/output" \
+        
+        # Singularity run command for cellranger
+        singularity exec \
+            --bind "${FASTQ_DIR}:/fastq:ro" \
+            --bind "${CELLRANGER_OUT}:/output" \
             ${CELLRANGER_IMAGE} cellranger \
             -s ${SAMPLE_NAME} \
             -f /fastq \
@@ -180,24 +182,26 @@ run_complete_pipeline() {
         log_message "Cellranger analysis completed successfully"
     fi
 
-     # 2. Run Clustering analysis
-     if [[ "$START_PHASE" = "cellranger" || "$START_PHASE" = "clustering" ]]; then
-         log_message "Starting Clustering analysis..."
-         docker run --rm \
-             -v "${CELLRANGER_OUT}:/03_cellranger" \
-             -v "${CLUSTERING_OUT}:/04_clustering" \
-             ${CLUSTERING_IMAGE} clustering \
-             -s ${SAMPLE_NAME} \
-             -i /03_cellranger/ \
-             -o /04_clustering/  \
-             --amulet
+    # 2. Run Clustering analysis
+    if [[ "$START_PHASE" = "cellranger" || "$START_PHASE" = "clustering" ]]; then
+        log_message "Starting Clustering analysis..."
+        
+        # Singularity run command for clustering
+        singularity exec \
+            --bind "${CELLRANGER_OUT}:/03_cellranger" \
+            --bind "${CLUSTERING_OUT}:/04_clustering" \
+            ${CLUSTERING_IMAGE} clustering \
+            -s ${SAMPLE_NAME} \
+            -i /03_cellranger/ \
+            -o /04_clustering/ \
+            --amulet
 
-         if [ $? -ne 0 ]; then
-             log_message "Error: Clustering analysis failed"
-             exit 1
-         fi
-         log_message "Clustering analysis completed successfully"
-     fi
+        if [ $? -ne 0 ]; then
+            log_message "Error: Clustering analysis failed"
+            exit 1
+        fi
+        log_message "Clustering analysis completed successfully"
+    fi
 
     log_message "Complete pipeline finished successfully"
 }
