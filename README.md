@@ -20,7 +20,7 @@ singularity cache list
 singularity cache clean
 ```
 Create sif files:
-singularity build --tmpdir /tscc/projects/ps-gaultonlab/rlmelton/github/ATAC_pipeline/tmp/ cellranger.sif docker://rlmelton1112/cellranger:latest 
+``singularity build --tmpdir /tscc/projects/ps-gaultonlab/rlmelton/github/ATAC_pipeline/tmp/ cellranger.sif docker://rlmelton1112/cellranger:latest ``
 
 ```singularity pull cellranger.sif docker://rlmelton1112/cellranger:latest``` <br>
 
