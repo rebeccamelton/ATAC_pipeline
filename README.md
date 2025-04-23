@@ -4,7 +4,40 @@
 This pipeline provides an automated workflow for processing single-cell ATAC-seq data through three main phases:
 1. Cellranger ATAC processing
 2. Window-based clustering using Seurat
-   
+---
+# TSCC
+Directions for running this pipeline on TSCC's HPC system using slurm and singularity
+
+## Create singularity images from dockerhub
+
+This process requests more memory then the default TSCC setting, start an interactive job.
+Examples code ```srun --pty --nodes=1 --ntasks-per-node=1 --cpus-per-task=4 --mem=2G --account=csd854 -t 2:00:00 -p platinum -q hcp-csd854 --wait 0 /bin/bash```
+
+Activate the correct module and clear any singularity cache:
+```
+module load singularitypro
+singularity cache list
+singularity cache clean
+```
+Create sif files:
+``singularity build --tmpdir /tscc/projects/ps-gaultonlab/rlmelton/github/ATAC_pipeline/tmp/ cellranger.sif docker://rlmelton1112/cellranger:latest ``
+
+```singularity pull cellranger.sif docker://rlmelton1112/cellranger:latest``` <br>
+
+```singularity pull snatac-clustering.sif docker://rlmelton1112/snatac-clustering:latest```
+## General use info:
+### 1. Setup Directory Structure
+```bash
+sh TSCC_workflow.sh setup -w /path/to/analysis_dir
+```
+#### example
+```bash
+sh TSCC_workflow.sh setup -w 042125
+```
+
+
+---
+# Gaulton Lab servers
 ## Prerequisites
 - Clone this repo 
 - Docker installed and running
