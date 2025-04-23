@@ -165,7 +165,7 @@ run_complete_pipeline() {
         log_message "Starting Cellranger analysis..."
         
         # Singularity run command for cellranger
-        singularity exec \
+        singularity run \
             --bind "${FASTQ_DIR}:/fastq:ro" \
             --bind "${CELLRANGER_OUT}:/output" \
             ${CELLRANGER_IMAGE} cellranger \
@@ -187,7 +187,7 @@ run_complete_pipeline() {
         log_message "Starting Clustering analysis..."
         
         # Singularity run command for clustering
-        singularity exec \
+        singularity run \
             --bind "${CELLRANGER_OUT}:/03_cellranger" \
             --bind "${CLUSTERING_OUT}:/04_clustering" \
             ${CLUSTERING_IMAGE} clustering \
