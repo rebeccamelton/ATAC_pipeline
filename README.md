@@ -19,12 +19,12 @@ module load singularitypro
 singularity cache list
 singularity cache clean
 ```
-Create sif files:
-``singularity build --tmpdir /tscc/projects/ps-gaultonlab/rlmelton/github/ATAC_pipeline/tmp/ cellranger.sif docker://rlmelton1112/cellranger:latest ``
+Create sif files: <br>
+```
+singularity pull --tmpdir {working_dir}/tmp/ cellranger.sif docker://rlmelton1112/cellranger:latest 
 
-```singularity pull cellranger.sif docker://rlmelton1112/cellranger:latest``` <br>
-
-```singularity pull snatac-clustering.sif docker://rlmelton1112/snatac-clustering:latest```
+singularity pull --tmpdir {working_dir}/tmp/ snatac-clustering.sif docker://rlmelton1112/snatac-clustering:latest
+```
 ## General use info:
 ### 1. Setup Directory Structure
 ```bash
@@ -35,6 +35,55 @@ sh TSCC_workflow.sh setup -w /path/to/analysis_dir
 sh TSCC_workflow.sh setup -w 042125
 ```
 
+### 2. Place FASTQ Files
+Put (either copy or move) your FASTQ files into the `02_fastq` directory:
+```bash
+cp /path/to/fastq/files/* /path/to/analysis_dir/02_fastq/
+```
+
+### 3. Run Analysis
+```bash
+./workflow.sh run \
+    -w /path/to/analysis_dir \
+    -s sample_name \
+    -c 24 \           # Number of cores
+    -t 200 \          # Total memory for cellranger (GB)
+    -m 4              # Memory per core for pipeline (GB)
+```
+
+## Detailed Usage
+
+### Setup Command
+```bash
+./workflow.sh setup -w PATH
+```
+Options:
+- `-w PATH`: Working directory where analysis will be performed (required)
+
+### Run Command
+```bash
+./workflow.sh run [options]
+```
+Required options:
+- `-w PATH`: Working directory where analysis will be performed
+- `-b=s NAME`: Sample name
+
+Optional parameters:
+- `-c CORES`: Number of cores to use (default: 24)
+- `-t MEM`: Total memory in GB for cellranger (default: 200)
+- `-m MEM`: Memory per core in GB for pipeline (default: 4)
+- `-p PHASE`: Start from specific phase (cellranger|pipeline|clustering)
+
+## Resuming Failed Runs
+If the pipeline fails at any point, you can resume from a specific phase using the `-p` option:
+
+```bash
+# Resume from pipeline phase
+./workflow.sh run -w /path/to/analysis_dir -s sample_name -p pipeline
+
+# Resume from clustering phase
+./workflow.sh run -w /path/to/analysis_dir -s sample_name -p clustering
+```
 
 ---
 # Gaulton Lab servers
@@ -78,7 +127,7 @@ cp /path/to/fastq/files/* /path/to/analysis_dir/02_fastq/
 ```bash
 ./workflow.sh run \
     -w /path/to/analysis_dir \
-    -b sample_name \
+    -s sample_name \
     -c 24 \           # Number of cores
     -t 200 \          # Total memory for cellranger (GB)
     -m 4              # Memory per core for pipeline (GB)
@@ -99,7 +148,7 @@ Options:
 ```
 Required options:
 - `-w PATH`: Working directory where analysis will be performed
-- `-b NAME`: Sample name
+- `-b=s NAME`: Sample name
 
 Optional parameters:
 - `-c CORES`: Number of cores to use (default: 24)
@@ -112,10 +161,10 @@ If the pipeline fails at any point, you can resume from a specific phase using t
 
 ```bash
 # Resume from pipeline phase
-./workflow.sh run -w /path/to/analysis_dir -b sample_name -p pipeline
+./workflow.sh run -w /path/to/analysis_dir -s sample_name -p pipeline
 
 # Resume from clustering phase
-./workflow.sh run -w /path/to/analysis_dir -b sample_name -p clustering
+./workflow.sh run -w /path/to/analysis_dir -s sample_name -p clustering
 ```
 
 ## Output Structure
