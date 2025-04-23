@@ -263,7 +263,13 @@ run_clustering <- function(opts) {
     p1 <- p1 + xlab('UMAP 1') + ylab('UMAP 2') + ggtitle(paste0('ATAC - ', opts$sample))
     p1 <- p1 + NoLegend() & theme(plot.title=element_text(hjust=0.5))
     print(p1)
-    
+    print_single_sample_pdf_atac(
+        opts$sample, 
+        opts$pdf_dir, 
+        plots, 
+        '_PostAmulet_Plots.pdf', 
+        reduction = 'windows'
+    )
     saveRDS(adata, paste0(opts$output_dir, opts$sample,"_postAmulet",".RDS"))
     
 
