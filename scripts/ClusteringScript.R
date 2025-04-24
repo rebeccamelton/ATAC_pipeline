@@ -169,7 +169,7 @@ run_clustering <- function(opts) {
         plots, 
         '_Initial_QC_Plots.pdf', 
         reduction = 'windows'
-    )
+    ) 
     if (opts$run_amulet) {
         # Prepare AMULET barcode table
         log_print("Running AMULET doublet detection...")
@@ -272,7 +272,6 @@ run_clustering <- function(opts) {
     )
     saveRDS(adata, paste0(opts$output_dir, opts$sample,"_postAmulet",".RDS"))
     
-
     log_print("Clustering analysis including AMULET completed successfully.")
     } else {
         log_print("Clustering analysis completed successfully.")
