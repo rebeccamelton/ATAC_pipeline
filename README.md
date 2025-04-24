@@ -8,23 +8,6 @@ This pipeline provides an automated workflow for processing single-cell ATAC-seq
 # TSCC
 Directions for running this pipeline on TSCC's HPC system using slurm and singularity
 
-## Create singularity images from dockerhub
-
-This process requests more memory then the default TSCC setting, start an interactive job.
-Examples code ```srun --pty --nodes=1 --ntasks-per-node=1 --cpus-per-task=4 --mem=2G --account=csd854 -t 2:00:00 -p platinum -q hcp-csd854 --wait 0 /bin/bash```
-
-Activate the correct module and clear any singularity cache:
-```
-module load singularitypro
-singularity cache list
-singularity cache clean
-```
-Create sif files: <br>
-```
-singularity pull --tmpdir {working_dir}/tmp/ cellranger.sif docker://rlmelton1112/cellranger:latest 
-
-singularity pull --tmpdir {working_dir}/tmp/ snatac-clustering.sif docker://rlmelton1112/snatac-clustering:latest
-```
 ## General use info:
 ### 1. Setup Directory Structure
 ```bash
