@@ -5,16 +5,21 @@
 #SBATCH --time=48:00:00               # Request runtime of 48 hours (adjust as needed)
 #SBATCH --nodes=1                     # Request 1 node
 #SBATCH --ntasks=1                    # Run a single task
+#SBATCH --account=csd854              # Account name (adjust as needed)
+#SBATCH --partition=platinum             # Partition name (adjust as needed)
+#SBATCH --qos=hcp-csd854                    
 #SBATCH --cpus-per-task=30            # Request 30 CPUs per task (matches your -c parameter)
 #SBATCH --mem=200G                    # Request 200GB memory (adjust based on your -t parameter)
 #SBATCH --mail-type=BEGIN,END,FAIL    # Email notifications (optional)
 #SBATCH --mail-user=rlmelton@health.ucsd.com  # User email (optional)
 
 # Load any necessary modules
-# module load singularity
+module load singularitypro
+singularity cache list
+singularity cache clean
 
 # Set working directory (crucial to ensure the job runs in the correct directory)
-WORKING_DIR="/tscc/projects/ps-gaultonlab/rlmelton/github/ATAC_pipeline/041725"
+WORKING_DIR="/tscc/projects/ps-gaultonlab/rlmelton/github/ATAC_pipeline/042125"
 cd "${WORKING_DIR}"
 
 # Define parameters
