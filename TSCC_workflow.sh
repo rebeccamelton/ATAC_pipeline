@@ -5,8 +5,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
 SCRIPTS_SOURCE_DIR="${SCRIPT_DIR}/scripts"
 
 # Singularity image paths (you'll need to adjust these to your actual .sif file locations)
-CELLRANGER_IMAGE="cellranger.sif"
-CLUSTERING_IMAGE="snatac-clustering.sif"
+CELLRANGER_IMAGE="/tscc/projects/ps-gaultonlab/rlmelton/github/ATAC_pipeline/cellranger.sif"
+CLUSTERING_IMAGE="/tscc/projects/ps-gaultonlab/rlmelton/github/ATAC_pipeline/snatac-clustering.sif"
 
 # Default values
 CORES=24
