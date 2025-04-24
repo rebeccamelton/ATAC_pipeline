@@ -84,6 +84,8 @@ If the pipeline fails at any point, you can resume from a specific phase using t
 # Resume from clustering phase
 ./workflow.sh run -w /path/to/analysis_dir -s sample_name -p clustering
 ```
+## Running pipeline with Slurm
+
 
 ---
 # Gaulton Lab servers
