@@ -23,7 +23,7 @@ WORKING_DIR="/tscc/projects/ps-gaultonlab/rlmelton/github/ATAC_pipeline/042125"
 cd "${WORKING_DIR}"
 
 # Define parameters
-SAMPLE_NAME="MM_548"
+SAMPLE_NAME="MM_12"
 CORES=30
 MEMORY=150
 PHASE="cellranger"
