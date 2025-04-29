@@ -10,8 +10,7 @@
 #SBATCH --qos=hcp-csd854                    
 #SBATCH --cpus-per-task=30            # Request 30 CPUs per task (matches your -c parameter)
 #SBATCH --mem=200G                    # Request 200GB memory (adjust based on your -t parameter)
-#SBATCH --mail-type=BEGIN,END,FAIL    # Email notifications (optional)
-#SBATCH --mail-user=rlmelton@health.ucsd.com  # User email (optional)
+
 
 # Load any necessary modules
 module load singularitypro
@@ -23,7 +22,7 @@ WORKING_DIR="/tscc/projects/ps-gaultonlab/rlmelton/github/ATAC_pipeline/042125"
 cd "${WORKING_DIR}"
 
 # Define parameters
-SAMPLE_NAME="MM_12"
+SAMPLE_NAME="MM_548"
 CORES=30
 MEMORY=150
 PHASE="cellranger"

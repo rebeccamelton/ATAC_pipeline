@@ -133,13 +133,13 @@ Options:
 ```
 Required options:
 - `-w PATH`: Working directory where analysis will be performed
-- `-b=s NAME`: Sample name
+- `-s NAME`: Sample name
 
 Optional parameters:
 - `-c CORES`: Number of cores to use (default: 24)
 - `-t MEM`: Total memory in GB for cellranger (default: 200)
 - `-m MEM`: Memory per core in GB for pipeline (default: 4)
-- `-p PHASE`: Start from specific phase (cellranger|pipeline|clustering)
+- `-p PHASE`: Start from specific phase (cellranger|clustering)
 
 ## Resuming Failed Runs
 If the pipeline fails at any point, you can resume from a specific phase using the `-p` option:
