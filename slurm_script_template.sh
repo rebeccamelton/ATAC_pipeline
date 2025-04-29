@@ -10,8 +10,7 @@
 #SBATCH --qos=hcp-csd854                    
 #SBATCH --cpus-per-task=30            # Request 30 CPUs per task (matches your -c parameter)
 #SBATCH --mem=200G                    # Request 200GB memory (adjust based on your -t parameter)
-#SBATCH --mail-type=BEGIN,END,FAIL    # Email notifications (optional)
-#SBATCH --mail-user=rlmelton@health.ucsd.com  # User email (optional)
+
 
 # Load any necessary modules
 module load singularitypro
